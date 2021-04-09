@@ -9,7 +9,11 @@ DEFINES += CSLOGGER_LIB
 
 
 HEADERS +=  \
+    Logger/cslogger_comdef.hpp  \
+    Logger/cslogger.h \
+    Markdown/markdown_comdef.hpp
 
 
 SOURCES +=  \
+    Logger/cslogger.cpp
 
