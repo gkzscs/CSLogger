@@ -133,8 +133,12 @@ bool CSLogger::auto_create_file()
 {
     bool res = need_create_new_file();
 
-    // Create log file
-    // To do
+    // Create log file and close current file
+    if (_file.isOpen()) _file.close();
+
+    auto fileName = generate_new_file_name();
+    auto filePath = _logDir + "/" + fileName;
+    res = create_file(filePath);
 
     return res;
 }
