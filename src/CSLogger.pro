@@ -11,9 +11,18 @@ DEFINES += CSLOGGER_LIB
 HEADERS +=  \
     Logger/cslogger_comdef.hpp  \
     Logger/cslogger.h \
-    Markdown/markdown_comdef.hpp
+    Markdown/markdown_comdef.hpp \
+    cslogger_global.h
 
 
 SOURCES +=  \
     Logger/cslogger.cpp
 
+
+OTHER_FILES = $$PWD/lib_x64/Desktop_Qt_5_12_6_MSVC2017_64bit/Debug/debug
+
+win32 {
+    inst.path = $$PWD/../bin
+    inst.files = $${OTHER_FILES}/*.dll $${OTHER_FILES}/*.lib
+    INSTALLS += inst
+}

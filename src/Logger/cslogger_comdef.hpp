@@ -8,7 +8,16 @@
 namespace cslogger
 {
 
+static const QString sclogFileNamePattern("yyyy-MM-dd hh:mm:ss");
 
+
+// Eliminate unused variable warnings
+inline void eliminateUnusedWarning()
+{
+#define EUW(x)  (void)x
+    EUW(sclogFileNamePattern);
+#undef EUW
+}
 
 }   // End of `cslogger`
 

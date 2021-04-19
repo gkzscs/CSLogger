@@ -25,6 +25,21 @@ bool CSLogger::set_log_file_dir(const QString &strDir)
     return dir.mkdir(strDir);
 }
 
+void CSLogger::set_log_file_generate_method(LogGenMethod method)
+{
+    _genMethod = method;
+}
+
+void CSLogger::set_log_file_generate_interval_time(int minute)
+{
+    _intervalGenTime = minute;
+}
+
+void CSLogger::set_log_file_generate_max_size(int maxSize)
+{
+    _maxFileSize = maxSize;
+}
+
 void CSLogger::log_fatal(const QString &msg)
 {
     log_write(msg, Fatal);
@@ -84,6 +99,66 @@ bool CSLogger::open_file(const QString &url, QIODevice::OpenMode mode)
     if (_file.isOpen()) return true;
 
     return _file.open(mode);
+}
+
+void CSLogger::close_file()
+{
+    _file.close();
+}
+
+bool CSLogger::need_create_new_file() const
+{
+    bool res = false;
+
+    switch (_genMethod)
+    {
+    case CreateTime:
+    {
+        auto existTime = exists_time();
+        if (existTime >= _intervalGenTime) res = true;
+        break;
+    }
+    case FileSize:
+    {
+        auto fileSize = _file.size();
+        if (fileSize >= _maxFileSize) res = true;
+        break;
+    }
+    }
+
+    return res;
+}
+
+bool CSLogger::auto_create_file()
+{
+    bool res = need_create_new_file();
+
+    // Create log file
+    // To do
+
+    return res;
+}
+
+QString CSLogger::generate_new_file_name() const
+{
+    // Assign to `_genTime` by its interface
+    _genTime.fromTime_t(QDateTime::currentDateTime().toTime_t());
+
+    auto fileName = _genTime.toString(sclogFileNamePattern);
+    return fileName;
+}
+
+/**
+ * @brief calculate the seconds that current log file exists
+ * @return existed seconds
+ */
+int CSLogger::exists_time() const
+{
+    auto now = QDateTime::currentDateTime().toTime_t();
+    auto last = _genTime.toTime_t();
+    auto intervalSec = static_cast<int>(now - last);
+
+    return intervalSec;
 }
 
 void CSLogger::log_write(const QString &msg, LogLevel lv)
