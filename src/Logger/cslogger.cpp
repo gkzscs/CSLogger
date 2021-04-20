@@ -80,6 +80,18 @@ void CSLogger::set_console(bool flag)
     _showConsole = flag;
 }
 
+bool CSLogger::create_file()
+{
+    bool res = need_create_new_file();
+    if (!res) return res;
+
+    // Create new log file
+    auto filePath = generate_new_file_path();
+    res = create_file(filePath);
+
+    return res;
+}
+
 bool CSLogger::create_file(const QString &url)
 {
     QDir dir;
@@ -88,9 +100,18 @@ bool CSLogger::create_file(const QString &url)
 
 bool CSLogger::open_file()
 {
-    if (_file.isOpen()) return true;
+    // Check if the file is open
+    auto res = need_create_new_file();
+    if (!res && _file.isOpen()) return true;
 
-    return _file.open(QIODevice::WriteOnly | QIODevice::Append);
+    // Get available file path and open the file
+    auto fileName = get_available_file_name();
+    auto filePath = convert_file_name_2_path(fileName);
+
+    // Create new file if needed
+    if (res) create_file(filePath);
+
+    return open_file(filePath, QIODevice::WriteOnly | QIODevice::Append);
 }
 
 bool CSLogger::open_file(const QString &url, QIODevice::OpenMode mode)
@@ -129,20 +150,6 @@ bool CSLogger::need_create_new_file() const
     return res;
 }
 
-bool CSLogger::auto_create_file()
-{
-    bool res = need_create_new_file();
-
-    // Create log file and close current file
-    if (_file.isOpen()) _file.close();
-
-    auto fileName = generate_new_file_name();
-    auto filePath = _logDir + "/" + fileName;
-    res = create_file(filePath);
-
-    return res;
-}
-
 QString CSLogger::generate_new_file_name() const
 {
     // Assign to `_genTime` by its interface
@@ -150,6 +157,40 @@ QString CSLogger::generate_new_file_name() const
 
     auto fileName = _genTime.toString(sclogFileNamePattern);
     return fileName;
+}
+
+QString CSLogger::generate_new_file_path() const
+{
+    auto fileName = generate_new_file_name();
+    return (_logDir + "/" + fileName);
+}
+
+QString CSLogger::find_latest_file_name() const
+{
+    QDir dir(_logDir);
+    auto listFile = dir.entryList(QDir::NoFilter, QDir::Time);
+    return listFile.last();
+}
+
+/**
+ * @brief get current available log file's name, this file must be latest and not out of date
+ * @return available latest file name
+ */
+QString CSLogger::get_available_file_name() const
+{
+    bool res = need_create_new_file();
+    if (!res)
+    {
+        return find_latest_file_name();
+    }
+
+    return generate_new_file_name();
+}
+
+QString CSLogger::convert_file_name_2_path(const QString &fileName) const
+{
+    auto filePath = _logDir + "/" +fileName;
+    return filePath;
 }
 
 /**
@@ -169,15 +210,17 @@ void CSLogger::log_write(const QString &msg, LogLevel lv)
 {
     if (_logLevel < lv) return;
 
-    // Open file
-    if (!open_file()) return;
+    // Auto open log file
+    auto res = open_file();
+    if (!res) return;
 
+    // Assemble message string
     auto strLevel = _sMapLevelStr.value(lv);
     QString totalMsg = _sMsgPattern.arg(strLevel).arg(msg).arg(__FILE__).arg(__LINE__);
 
     // Write to file
-    auto res = _file.write(totalMsg.toUtf8());
-    if (res == -1) throw "Error occurred while writting to file:" + _file.fileName();
+    qint64 n = _file.write(totalMsg.toUtf8());
+    if (n == -1) throw "Error occurred while writting to file:" + _file.fileName();
 }
 
 void CSLogger::init()

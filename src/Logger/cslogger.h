@@ -64,14 +64,18 @@ public:
     void set_console(bool flag);
 
 protected:
+    bool create_file();
     bool create_file(const QString &url);
     bool open_file();
     bool open_file(const QString &url, QIODevice::OpenMode mode = QIODevice::WriteOnly | QIODevice::Append);
     void close_file();
 
     bool need_create_new_file() const;
-    bool auto_create_file();
     QString generate_new_file_name() const;
+    QString generate_new_file_path() const;
+    QString find_latest_file_name() const;
+    QString get_available_file_name() const;
+    QString convert_file_name_2_path(const QString &fileName) const;
 
     int exists_time() const;
 
