@@ -191,14 +191,6 @@ QString CSLogger::find_latest_file_name() const
     return listFile.last();
 }
 
-QString CSLogger::convert_time_2_file_name(const QString &time) const
-{
-    static const QString suffix = ".txt";
-    QString fileName = QString("%1%2").arg(time).arg(suffix);
-
-    return fileName;
-}
-
 /**
  * @brief get current available log file's name, this file must be latest and not out of date
  * @return available latest file name
@@ -231,6 +223,15 @@ int CSLogger::exists_time() const
     auto intervalSec = static_cast<int>(now - last);
 
     return intervalSec;
+}
+
+
+QString CSLogger::convert_time_2_file_name(const QString &time) const
+{
+    static const QString suffix = ".txt";
+    QString fileName = QString("%1%2").arg(time).arg(suffix);
+
+    return fileName;
 }
 
 /**

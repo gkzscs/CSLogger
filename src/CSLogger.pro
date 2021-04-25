@@ -11,12 +11,14 @@ DEFINES += CSLOGGER_LIB
 HEADERS +=  \
     Logger/cslogger_comdef.hpp  \
     Logger/cslogger.h \
+    Markdown/csmarkdownlogger.h \
     Markdown/markdown_comdef.hpp \
     cslogger_global.h
 
 
 SOURCES +=  \
-    Logger/cslogger.cpp
+    Logger/cslogger.cpp \
+    Markdown/csmarkdownlogger.cpp
 
 
 OTHER_FILES = $$PWD/lib_x64/Desktop_Qt_5_12_6_MSVC2017_64bit/Debug/debug

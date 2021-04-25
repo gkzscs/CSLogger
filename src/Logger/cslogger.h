@@ -46,7 +46,7 @@ public:
 
 public:
     CSLogger(LogLevel lv = All);
-    ~CSLogger();
+    virtual ~CSLogger();
 
     bool set_log_file_dir(const QString &strDir);
     void set_log_file_generate_method(LogGenMethod method);
@@ -54,12 +54,12 @@ public:
     void set_log_file_generate_max_size(unsigned maxSize);
 
 public:
-    void log_fatal(const QString &msg);
-    void log_error(const QString &msg);
-    void log_warn(const QString &msg);
-    void log_info(const QString &msg);
-    void log_debug(const QString &msg);
-    void log_trace(const QString &msg);
+    virtual void log_fatal(const QString &msg);
+    virtual void log_error(const QString &msg);
+    virtual void log_warn(const QString &msg);
+    virtual void log_info(const QString &msg);
+    virtual void log_debug(const QString &msg);
+    virtual void log_trace(const QString &msg);
 
     void set_level(LogLevel lv);
     void set_console(bool flag);
@@ -75,13 +75,13 @@ protected:
     QString generate_new_file_name();
     QString generate_new_file_path();
     QString find_latest_file_name() const;
-    QString convert_time_2_file_name(const QString &time) const;
     QString get_available_file_name();
     QString convert_file_name_2_path(const QString &fileName) const;
 
     int exists_time() const;
 
-    void log_write(const QString &msg, LogLevel lv);
+    virtual QString convert_time_2_file_name(const QString &time) const;
+    virtual void log_write(const QString &msg, LogLevel lv);
 
 private:
     void init();
