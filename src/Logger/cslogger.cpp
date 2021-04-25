@@ -18,6 +18,11 @@ CSLogger::CSLogger(LogLevel lv)
     init();
 }
 
+CSLogger::~CSLogger()
+{
+    _file.close();
+}
+
 bool CSLogger::set_log_file_dir(const QString &strDir)
 {
     _logDir = strDir;

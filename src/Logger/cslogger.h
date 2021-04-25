@@ -46,6 +46,7 @@ public:
 
 public:
     CSLogger(LogLevel lv = All);
+    ~CSLogger();
 
     bool set_log_file_dir(const QString &strDir);
     void set_log_file_generate_method(LogGenMethod method);
