@@ -65,16 +65,17 @@ public:
 
 protected:
     bool create_file();
-    bool create_file(const QString &url);
+    bool create_file(const QString &fileName);
     bool open_file();
     bool open_file(const QString &url, QIODevice::OpenMode mode = QIODevice::WriteOnly | QIODevice::Append);
     void close_file();
 
     bool need_create_new_file() const;
-    QString generate_new_file_name() const;
-    QString generate_new_file_path() const;
+    QString generate_new_file_name();
+    QString generate_new_file_path();
     QString find_latest_file_name() const;
-    QString get_available_file_name() const;
+    QString convert_time_2_file_name(const QString &time) const;
+    QString get_available_file_name();
     QString convert_file_name_2_path(const QString &fileName) const;
 
     int exists_time() const;

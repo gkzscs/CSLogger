@@ -8,7 +8,7 @@
 namespace cslogger
 {
 
-static const QString sclogFileNamePattern("yyyy-MM-dd hh:mm:ss");
+static const QString sclogFileNamePattern("yyyy-MM-dd hhmmss");
 
 
 // Eliminate unused variable warnings
