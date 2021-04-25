@@ -49,8 +49,8 @@ public:
 
     bool set_log_file_dir(const QString &strDir);
     void set_log_file_generate_method(LogGenMethod method);
-    void set_log_file_generate_interval_time(int minute);
-    void set_log_file_generate_max_size(int maxSize);
+    void set_log_file_generate_interval_time(unsigned minute);
+    void set_log_file_generate_max_size(unsigned maxSize);
 
 public:
     void log_fatal(const QString &msg);
@@ -83,11 +83,12 @@ protected:
 
 private:
     void init();
+    void init_generate_time();
 
 protected:
     bool _showConsole;
-    int _maxFileSize;
-    int _intervalGenTime;
+    unsigned _maxFileSize;
+    unsigned _intervalGenTime;
 
     LogLevel _logLevel;
     LogGenMethod _genMethod;

@@ -1,3 +1,4 @@
+﻿#pragma execution_character_set("utf-8")
 #include "cslogger.h"
 
 
@@ -30,12 +31,12 @@ void CSLogger::set_log_file_generate_method(LogGenMethod method)
     _genMethod = method;
 }
 
-void CSLogger::set_log_file_generate_interval_time(int minute)
+void CSLogger::set_log_file_generate_interval_time(unsigned minute)
 {
     _intervalGenTime = minute;
 }
 
-void CSLogger::set_log_file_generate_max_size(int maxSize)
+void CSLogger::set_log_file_generate_max_size(unsigned maxSize)
 {
     _maxFileSize = maxSize;
 }
@@ -136,7 +137,7 @@ bool CSLogger::need_create_new_file() const
     case CreateTime:
     {
         auto existTime = exists_time();
-        if (existTime >= _intervalGenTime) res = true;
+        if (existTime >= static_cast<int>(_intervalGenTime)) res = true;
         break;
     }
     case FileSize:
@@ -169,6 +170,8 @@ QString CSLogger::find_latest_file_name() const
 {
     QDir dir(_logDir);
     auto listFile = dir.entryList(QDir::NoFilter, QDir::Time);
+
+    if (listFile.isEmpty()) return nullptr;
     return listFile.last();
 }
 
@@ -231,7 +234,7 @@ void CSLogger::init()
         QStringList listStr;
         listStr << "OFF" << "FATAL" << "ERROR" << "WARN" << "INFO" << "DEBUG" << "TRACE" << "ALL";
 
-        assert(listStr.size() == All-1);
+        assert(listStr.size() == All+1);
 
         for (int i = 0, n = listStr.size(); i < n; ++i)
         {
@@ -241,8 +244,32 @@ void CSLogger::init()
     }
 
     // Basic settings
+    set_log_file_dir("./cslog");
+    set_log_file_generate_method(CreateTime);
+    set_log_file_generate_interval_time(1);
+    set_log_file_generate_max_size(1024);
     set_level(_logLevel);
     set_console(false);
+
+    // Initialize generate time
+    init_generate_time();
+}
+
+void CSLogger::init_generate_time()
+{
+    // Initialize `_genTime` with earlier time
+    auto fileName = find_latest_file_name();
+    if (fileName.isEmpty())
+    {
+        _genTime.setSecsSinceEpoch(QDateTime::currentSecsSinceEpoch() - _intervalGenTime);
+        return;
+    }
+
+    // If exists file, then get latest file created time
+    auto filePath = convert_file_name_2_path(fileName);
+
+    QFileInfo fileInfo(filePath);
+    _genTime = fileInfo.created();
 }
 
 }   // `csloggger`
